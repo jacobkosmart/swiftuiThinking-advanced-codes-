@@ -62,19 +62,63 @@ modifier(DefaultButtonViewModifier(backgroundColor: backgroundColor))
 
   <img height="350"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/161881772-79c1e9f9-7b25-4eea-a5a2-94c3cd4ef9c3.png">
 
-```swift
+## 02.Custom ButtonStyle
 
-```
-
-  <img height="350"  alt="스크린샷" src="">
-
-## 02.ButtonStyle
+Especially in more advanced production apps you actually want to customize
 
 ```swift
+import SwiftUI
 
+// MARK: -  VIEW
+struct ButtonStyleBootCamp: View {
+// MARK: -  PROPERTY
+// MARK: -  BODY
+var body: some View {
+Button {
+
+} label: {
+  Text("Click me")
+    .font(.headline)
+    .foregroundColor(.white)
+    .frame(height: 55)
+    .frame(maxWidth: .infinity)
+    .background(Color.blue.cornerRadius(10))
+    .shadow(color: Color.blue.opacity(0.3), radius: 10, x: 0.0, y: 10.0)
+}
+// .buttonStyle(PlainButtonStyle())
+// .buttonStyle(PressableStyle())
+.withPressableStyle()
+.padding(40)
+}
+}
+
+// MARK: -  VIEWMODIFIER
+struct PressableStyle: ButtonStyle {
+
+let scaledAmount: CGFloat
+
+// set default scaleAmount
+init(scaledAmount: CGFloat) {
+self.scaledAmount = scaledAmount
+}
+
+func makeBody(configuration: Configuration) -> some View {
+configuration.label
+  .scaleEffect(configuration.isPressed ? scaledAmount : 1.0)
+  .opacity(configuration.isPressed ? 0.9 : 1.0)
+  .brightness(configuration.isPressed ? 0.05 : 0)
+}
+}
+
+// MARK: -  EXTENSTION
+extension View {
+func withPressableStyle(scaledAmount: CGFloat = 0.9) -> some View {
+self.buttonStyle(PressableStyle(scaledAmount: scaledAmount))
+}
+}
 ```
 
-  <img height="350"  alt="스크린샷" src="">
+  <img height="350"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/161889180-89343105-3cda-41a4-af26-fda89545e68b.gif">
 
 ```swift
 
