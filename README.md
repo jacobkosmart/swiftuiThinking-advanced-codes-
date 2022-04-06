@@ -6,11 +6,61 @@
 
 ## 01.ViewModifiers
 
-```swift
+You actually use view modifiers all the time. Every time you call .font, .foregroundColor, .backgroundColor those are actually view modifiers
 
+They take the current view they add a modifier and then return a modifiedView. All viewModifier is basically taking the current content adding something to it and then returning it back to the view
+
+So, by creating custom viewModifier you can actually stack a bunch of regular modifiers together to create a really unique and custom formatting. The most important is probably reusability cause by using custom viewModifiers you can really control how we want all views in your app to look and we can get all of those views to refer back to a single source of truth for how that button or that view should look
+
+```swift
+// MARK: -  CUSTOM VIEWMODIFIER
+struct DefaultButtonViewModifier: ViewModifier {
+let backgroundColor: Color
+
+func body(content: Content) -> some View {
+content
+  .foregroundColor(.white)
+  .frame(height: 55)
+  .frame(maxWidth: .infinity)
+  .background(backgroundColor)
+  .shadow(radius: 10)
+  .padding()
+}
+}
+
+// MARK: -  VIEW
+struct ViewModifierBootCamp: View {
+// MARK: -  PROPERTY
+
+// MARK: -  BODY
+var body: some View {
+VStack {
+  Text("Hello")
+    .modifier(DefaultButtonViewModifier(backgroundColor: .orange))
+    .font(.headline)
+
+  Text("Hello, world")
+    .withDefaultButtonFormatting(backgroundColor: .green)
+    .font(.subheadline)
+
+  // ViewModifier -> Extension 사용
+  Text("Hello!!")
+    .withDefaultButtonFormatting()
+    .font(.title)
+
+} //: VSTACK
+}
+}
+
+// MARK: -  EXTENSION
+extension View {
+func withDefaultButtonFormatting(backgroundColor: Color = .blue)-> some View {
+modifier(DefaultButtonViewModifier(backgroundColor: backgroundColor))
+}
+}
 ```
 
-  <img height="350"  alt="스크린샷" src="">
+  <img height="350"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/161881772-79c1e9f9-7b25-4eea-a5a2-94c3cd4ef9c3.png">
 
 ```swift
 
