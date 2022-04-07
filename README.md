@@ -259,17 +259,80 @@ asymmetric(
 
 ## 04.MatchedGeometryEffect
 
+The matchedGeometryEffect allows us to animate geometric shapes on the screen and specifically allows us to more on shape into another shape. So how we do it is actually create two different shapes on the screen and then we tell the system that these two shapes are the same shape
+
 ```swift
+struct MatchedGeometryEffectBootCamp: View {
+// MARK: -  PROPERTY
+@State private var isClicked: Bool = false
+@Namespace private var namespace
+// MARK: -  BODY
+var body: some View {
+VStack {
+if !isClicked {
+  RoundedRectangle(cornerRadius: 25.0)
+    .matchedGeometryEffect(id: "rectangle", in: namespace)
+    .frame(width: 100, height: 100)
+}
+
+Spacer()
+if isClicked {
+  RoundedRectangle(cornerRadius: 25.0)
+    .matchedGeometryEffect(id: "rectangle", in: namespace)
+    .frame(width: 300, height: 200)
+}
+
+} //: VSTACK
+.frame(maxWidth: .infinity, maxHeight: .infinity)
+.background(Color.red)
+.onTapGesture {
+withAnimation(.easeInOut) {
+  isClicked.toggle()
+}
+}
+}
+}
 
 ```
 
-  <img height="350"  alt="스크린샷" src="">
+  <img height="300"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/162106699-5e55a15b-5f48-433f-a369-a955e0967836.gif">
 
 ```swift
+struct MatchedGeometryEffectExample2: View {
 
+let categories: [String] = ["Home", "Popular", "Saved"]
+@State private var selected: String = "Home"
+@Namespace private var namespace2
+
+var body: some View {
+HStack {
+ForEach(categories, id: \.self) { category in
+ZStack {
+  if selected == category  {
+    RoundedRectangle(cornerRadius: 10.0)
+      .fill(Color.red)
+      .matchedGeometryEffect(id: "category_background", in: namespace2)
+      .frame(width: 40, height: 2)
+      .offset(y: 20)
+  }
+  Text(category)
+    .foregroundColor(selected == category ? .red : .black)
+  }
+  .frame(maxWidth: .infinity)
+  .frame(height: 55)
+  .onTapGesture {
+    withAnimation(.spring()) {
+      selected = category
+    }
+  }
+} //: LOOP
+} //: HSTACK
+.padding()
+}
+}
 ```
 
-  <img height="350"  alt="스크린샷" src="">
+  <img height="300"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/162109531-b0f47e0d-d388-4f10-a326-1575b5b5dec4.gif">
 
 ## 05.Shapes, Curves, AnimateableData
 
