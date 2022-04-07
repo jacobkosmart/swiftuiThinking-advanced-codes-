@@ -17,6 +17,7 @@ struct DefaultButtonViewModifier: ViewModifier {
 			.frame(height: 55)
 			.frame(maxWidth: .infinity)
 			.background(backgroundColor)
+			.cornerRadius(15)
 			.shadow(radius: 10)
 			.padding()
 	}
