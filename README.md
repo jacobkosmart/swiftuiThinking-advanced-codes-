@@ -336,17 +336,487 @@ ZStack {
 
 ## 05.Shapes, Curves, AnimateableData
 
+### Custom Straight lines
+
+By default SwiftUI actually comes with a bunch of shapes out of the box like rectangles rounded rectangles circles. By building custom and unique UI designs eventually you'll run into a point where actually need a custom shape.
+
+SwiftUI by actually drawing the shape from point to point on a path
+
+```swift
+// MARK: -  VIEW
+struct CustomShapesBootCamp: View {
+// MARK: -  PROPERTY
+// MARK: -  BODY
+var body: some View {
+ZStack {
+  Triangle()
+    // .fill(LinearGradient(gradient: Gradient(colors: [Color.red, Color.blue]), startPoint: .leading, endPoint: .trailing))
+    // .trim(from: 0, to: 0.5)
+    .stroke(style: StrokeStyle(lineWidth: 3, lineCap: .round, dash: [10]))
+    .foregroundColor(.blue)
+    .frame(width: 300, height: 300)
+} //: ZSTACK
+}
+}
+
+// MARK: -  CUSTOM SHAPE
+struct Triangle: Shape {
+
+func path(in rect: CGRect) -> Path {
+Path { path in
+  path.move(to: CGPoint(x: rect.midX, y: rect.minY)) // Set Starting point
+  path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+  path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
+  path.addLine(to: CGPoint(x: rect.midX, y: rect.minY))
+}
+}
+}
+```
+
+  <img height="300"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/162120819-b382eaa0-b629-4de5-a3ab-d5363fbefb1a.png">
+
+```swift
+// MARK: -  VIEW
+struct CustomShapesBootCamp: View {
+// MARK: -  PROPERTY
+// MARK: -  BODY
+var body: some View {
+ZStack {
+
+Image("pic")
+  .resizable()
+  .scaledToFill()
+  .frame(width: 300, height: 300)
+  .clipShape(
+    Triangle()
+      .rotation(Angle(degrees: 180))
+  )
+} //: ZSTACK
+}
+}
+
+// MARK: -  CUSTOM SHAPE
+struct Triangle: Shape {
+
+func path(in rect: CGRect) -> Path {
+  Path { path in
+    path.move(to: CGPoint(x: rect.midX, y: rect.minY)) // Set Starting point
+    path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+    path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
+    path.addLine(to: CGPoint(x: rect.midX, y: rect.minY))
+  }
+}
+}
+```
+
+  <img height="300"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/162121268-25c1e46a-5ca2-42b6-8fba-d68b016effd9.png">
+
+```swift
+// MARK: -  VIEW
+struct CustomShapesBootCamp: View {
+// MARK: -  PROPERTY
+// MARK: -  BODY
+var body: some View {
+  ZStack {
+
+    Diamond()
+      .frame(width: 300, height: 300)
+  } //: ZSTACK
+}
+}
+
+// MARK: -  CUSTOM SHAPE
+
+
+struct Diamond: Shape {
+func path(in rect: CGRect) -> Path {
+Path { path in
+  let horizontalOffset: CGFloat = rect.width * 0.2
+  path.move(to: CGPoint(x: rect.midX, y: rect.minY))
+  path.addLine(to: CGPoint(x: rect.maxX - horizontalOffset, y: rect.midY))
+  path.addLine(to: CGPoint(x: rect.midX, y: rect.maxY))
+  path.addLine(to: CGPoint(x: rect.minX + horizontalOffset, y: rect.midY))
+  path.addLine(to: CGPoint(x: rect.midX, y: rect.minY))
+}
+}
+}
+
+```
+
+  <img height="300"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/162121962-f086cb7e-14b3-4823-8a63-c7ace0dc0eab.png">
+
+```swift
+// MARK: -  VIEW
+struct CustomShapesBootCamp: View {
+// MARK: -  PROPERTY
+// MARK: -  BODY
+var body: some View {
+ZStack {
+
+  Trapezoid()
+    .frame(width: 300, height: 150)
+} //: ZSTACK
+}
+}
+
+// MARK: -  CUSTOM SHAPE
+struct Trapezoid: Shape {
+func path(in rect: CGRect) -> Path {
+Path { path in
+  let horizontalOffset: CGFloat = rect.width * 0.2
+  path.move(to: CGPoint(x: rect.minX + horizontalOffset, y: rect.minY ))
+  path.addLine(to: CGPoint(x: rect.maxX - horizontalOffset, y: rect.minY))
+  path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+  path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
+  path.addLine(to: CGPoint(x: rect.minX + horizontalOffset, y: rect.minY))
+}
+}
+}
+```
+
+  <img height="300"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/162123901-bc29502d-1211-41c0-ad76-f21265766943.png">
+
+### Custom Curve Lines
+
+Curves and arcs could be a little tricky to implement. To do that, arcs which is basically just a regular symmetrical curve and then quad curves which are a little more advanced and possibly more useful because they can connect two points and create an automatic curve between those two points
+
+```swift
+/ MARK: -  VIEW
+struct CustomCurvesBootCamp: View {
+// MARK: -  PROPERTY
+
+// MARK: -  BODY
+var body: some View {
+  ArcSample()
+    .stroke(lineWidth: 5)
+    .frame(width: 200, height: 200)
+}
+}
+
+// MARK: -  PREVIEW
+struct CustomCurvesBootCamp_Previews: PreviewProvider {
+static var previews: some View {
+  CustomCurvesBootCamp()
+}
+}
+
+// MARK: -  CUSTOM SHAPE
+struct ArcSample: Shape {
+func path(in rect: CGRect) -> Path {
+Path { path in
+  path.move(to: CGPoint(x: rect.maxX, y: rect.midY))
+  path.addArc(
+    center: CGPoint(x: rect.midX, y: rect.midY),
+    radius: rect.height / 2,
+    startAngle: Angle(degrees: 0),
+    endAngle: Angle(degrees: 40),
+    clockwise: true)
+}
+}
+}
+
+```
+
+  <img height="300"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/162659981-51fd2830-f5c5-4565-9583-a9e4f95eaa79.png">
+
+```swift
+// MARK: -  VIEW
+struct CustomCurvesBootCamp: View {
+// MARK: -  PROPERTY
+
+// MARK: -  BODY
+var body: some View {
+  ShapeWithArc()
+    .frame(width: 200, height: 200)
+    // .rotationEffect(Angle(degrees: 90))
+}
+}
+
+// MARK: -  PREVIEW
+struct CustomCurvesBootCamp_Previews: PreviewProvider {
+static var previews: some View {
+  CustomCurvesBootCamp()
+}
+}
+
+// MARK: -  CUSTOM SHAPE
+struct ShapeWithArc: Shape {
+func path(in rect: CGRect) -> Path {
+Path { path in
+  // top left
+  path.move(to: CGPoint(x: rect.minX, y: rect.minY))
+
+  // top right
+  path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
+
+  // mid right
+  path.addLine(to: CGPoint(x: rect.maxX, y: rect.midY))
+
+  // bottom
+  // path.addLine(to: CGPoint(x: rect.midX, y: rect.maxY))
+  path.addArc(
+    center: CGPoint(x: rect.midX, y: rect.midY),
+    radius: rect.height / 2,
+    startAngle: Angle(degrees: 0),
+    endAngle: Angle(degrees: 180),
+    clockwise: false)
+
+  // mid left
+  path.addLine(to: CGPoint(x: rect.minX, y: rect.midY))
+}
+}
+}
+
+```
+
+  <img height="300"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/162660796-8a9a7f3a-834f-46b0-a746-0f0c4beec565.png">
+
+- Quad curve
+
+<img width="322" alt="image" src="https://user-images.githubusercontent.com/28912774/162661177-a661876c-2849-4b88-8e38-9e63fb70704f.png">
+
+```swift
+// MARK: -  VIEW
+struct CustomCurvesBootCamp: View {
+// MARK: -  PROPERTY
+
+// MARK: -  BODY
+var body: some View {
+  QuadSample()
+    .frame(width: 200, height: 200)
+}
+}
+
+// MARK: -  PREVIEW
+struct CustomCurvesBootCamp_Previews: PreviewProvider {
+static var previews: some View {
+  CustomCurvesBootCamp()
+}
+}
+
+// MARK: -  CUSTOM SHAPE
+struct QuadSample: Shape {
+func path(in rect: CGRect) -> Path {
+Path { path in
+  path.move(to: .zero)
+  path.addQuadCurve(
+    to: CGPoint(x: rect.maxX, y: rect.maxY),
+    control: CGPoint(x: rect.minX, y: rect.maxY))
+}
+}
+}
+
+```
+
+  <img height="300"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/162661462-f1d5036f-274e-42f5-864d-d3b6fd18b947.png">
+
+```swift
+// MARK: -  VIEW
+struct CustomCurvesBootCamp: View {
+// MARK: -  PROPERTY
+
+// MARK: -  BODY
+var body: some View {
+WaterShape()
+  .fill(LinearGradient(
+    gradient: Gradient(colors: [Color.blue, Color.cyan]),
+    startPoint: .topTrailing,
+    endPoint: .bottomTrailing))
+  .ignoresSafeArea()
+}
+}
+
+// MARK: -  PREVIEW
+struct CustomCurvesBootCamp_Previews: PreviewProvider {
+	static var previews: some View {
+		CustomCurvesBootCamp()
+	}
+}
+
+// MARK: -  CUSTOM SHAPE
+struct WaterShape: Shape {
+func path(in rect: CGRect) -> Path {
+Path { path in
+path.move(to: CGPoint(x: rect.minX, y: rect.midY))
+
+path.addQuadCurve(
+  to: CGPoint(x: rect.midX, y: rect.midY),
+  control: CGPoint(x: rect.width * 0.25, y: rect.height * 0.40))
+
+path.addQuadCurve(
+  to: CGPoint(x: rect.maxX, y: rect.midY),
+  control: CGPoint(x: rect.width * 0.75, y: rect.height * 0.60))
+
+path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
+}
+}
+}
+
+```
+
+  <img height="300"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/162662232-4c2e418b-8beb-45bf-8c25-b15ce718e1f1.png">
+
+### Custom animated Lines
+
+```swift
+// MARK: -  VIEW
+struct AnimatableDataBootCamp: View {
+// MARK: -  PROPERTY
+@State private var animate: Bool = false
+// MARK: -  BODY
+var body: some View {
+ZStack {
+  // RoundedRectangle(cornerRadius: animate ? 60 : 0)
+  RectangleWithSingleCornerAnimation(cornerRadius: animate ? 60 : 0)
+    .frame(width: 250, height: 250)
+} //: ZSTACK
+.onAppear {
+  withAnimation(Animation.linear(duration: 2.0).repeatForever()) {
+    animate.toggle()
+  }
+}
+}
+}
+
+// MARK: -  PREVIEW
+struct AnimatableDataBootCamp_Previews: PreviewProvider {
+static var previews: some View {
+  AnimatableDataBootCamp()
+}
+}
+
+// MARK: -  CUSTOM SHAPE
+struct RectangleWithSingleCornerAnimation: Shape {
+
+var cornerRadius: CGFloat
+var animatableData: CGFloat {
+  get { cornerRadius }
+  set { cornerRadius = newValue }
+}
+
+func path(in rect: CGRect) -> Path {
+Path { path in
+  path.move(to: .zero)
+  path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
+  path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY - cornerRadius))
+
+  path.addArc(
+    center: CGPoint(x: rect.maxX - cornerRadius, y: rect.maxY - cornerRadius),
+    radius: cornerRadius,
+    startAngle: Angle(degrees: 0),
+    endAngle: Angle(degrees: 360),
+    clockwise: false)
+  path.addLine(to: CGPoint(x: rect.maxX - cornerRadius, y: rect.maxY ))
+  path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
+}
+}
+}
+
+```
+
+  <img height="300"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/162670153-3b9e980a-b728-41e8-9347-9ed742d45c0b.gif">
+
+```swift
+// MARK: -  VIEW
+struct AnimatableDataBootCamp: View {
+// MARK: -  PROPERTY
+@State private var animate: Bool = false
+// MARK: -  BODY
+var body: some View {
+ZStack {
+  Pacman(offsetAmount: animate ? 20 : 0)
+    .frame(width: 250, height: 250)
+} //: ZSTACK
+.onAppear {
+  withAnimation(Animation.easeInOut.repeatForever()) {
+    animate.toggle()
+  }
+}
+}
+}
+
+// MARK: -  PREVIEW
+struct AnimatableDataBootCamp_Previews: PreviewProvider {
+	static var previews: some View {
+		AnimatableDataBootCamp()
+	}
+}
+
+// MARK: -  CUSTOM SHAPE
+
+struct Pacman: Shape {
+
+var offsetAmount: Double
+var animatableData: Double {
+get { offsetAmount }
+set { offsetAmount = newValue }
+}
+
+func path(in rect: CGRect) -> Path {
+Path { path in
+  path.move(to: CGPoint(x: rect.midX, y: rect.midY))
+  path.addArc(
+    center: CGPoint(x: rect.midX, y: rect.midY),
+    radius: rect.height / 2,
+    startAngle: Angle(degrees: offsetAmount),
+    endAngle: Angle(degrees: 360 - offsetAmount),
+    clockwise: false)
+}
+}
+}
+
+```
+
+  <img height="300"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/162670869-790846d4-ba2b-468d-aea1-f11f47e31f39.gif">
+
 ```swift
 
 ```
 
-  <img height="350"  alt="스크린샷" src="">
+  <img height="300"  alt="스크린샷" src="">
 
 ```swift
 
 ```
 
-  <img height="350"  alt="스크린샷" src="">
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
 
 ## 06.Generics
 
