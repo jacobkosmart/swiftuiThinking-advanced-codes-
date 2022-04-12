@@ -770,69 +770,371 @@ Path { path in
 
   <img height="300"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/162670869-790846d4-ba2b-468d-aea1-f11f47e31f39.gif">
 
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
 ## 06.Generics
 
 ```swift
+// MARK: -  MODEL
+struct StringModel {
+let info: String?
+
+func removeInfo() -> StringModel {
+  StringModel(info: nil)
+}
+}
+
+// generic any type
+struct GenericModel<T> {
+
+let info: T?
+func removeInfo() -> GenericModel {
+  GenericModel(info: nil)
+}
+}
+
+// MARK: -  VIEWMODEL
+class GenericsViewModel: ObservableObject {
+// MARK: -  PROPERTY
+@Published var stringModel = StringModel(info: "Hi World!")
+
+@Published var genericStringModel = GenericModel(info: "Hello, world")
+@Published var genericBoolModel = GenericModel(info: true)
+// MARK: -  INIT
+
+// MARK: -  FUNCTION
+func removeData() {
+  stringModel = stringModel.removeInfo()
+  genericStringModel = genericStringModel.removeInfo()
+  genericBoolModel = genericBoolModel.removeInfo()
+}
+}
+
+// MARK: -  VIEW
+struct GenericsBootCamp: View {
+// MARK: -  PROPERTY
+@StateObject private var vm = GenericsViewModel()
+// MARK: -  BODY
+var body: some View {
+VStack {
+  GenericView(content: Text("custom content"), title: "new View")
+
+  Text(vm.stringModel.info ?? "No data")
+  Text(vm.genericStringModel.info ?? "No data")
+  Text(vm.genericBoolModel.info?.description ?? "No data")
+    .onTapGesture {
+      vm.removeData()
+    }
+} //: VSTACK
+}
+}
+
+struct GenericView<T:View>: View {
+let content: T
+let title: String
+
+var body: some View {
+  VStack {
+    Text(title)
+    content
+  }
+}
+}
+```
+
+  <img height="300"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/162681169-8754750c-52bd-4bb2-a058-4ef5a0cadbcc.png">
+
+## 07.ViewBuilder
+
+We can use a view builder to create closures in which we can create custom child views. In order to use the view builder and get the most out of it we actually use the view builder alongside generic types
+
+```swift
+import SwiftUI
+
+// MARK: -  VIEW
+struct ViewBuilderBootCamp: View {
+// MARK: -  PROPERTY
+
+// MARK: -  BODY
+var body: some View {
+  VStack {
+    HeaderViewRegular(title: "New Title", description: "Hello", iconName: "heart.fill")
+    HeaderViewRegular(title: "Another Title", description: nil, iconName: nil)
+    Spacer()
+  } //: VSTACK
+}
+}
+
+// MARK: -  EXTENSTION
+struct HeaderViewRegular: View {
+let title: String
+let description: String?
+let iconName: String?
+
+var body: some View {
+  VStack(alignment: .leading, spacing: 10) {
+    Text(title)
+      .font(.largeTitle)
+      .fontWeight(.semibold)
+
+    if let description = description {
+      Text(description)
+        .font(.callout)
+    }
+    if let iconName = iconName {
+      Image(systemName: iconName)
+    }
+
+    RoundedRectangle(cornerRadius: 5)
+      .frame(height: 2)
+
+  } //: VSTACK
+  .frame(maxWidth: .infinity, alignment: .leading)
+  .padding()
+}
+}
 
 ```
 
-  <img height="350"  alt="스크린샷" src="">
+  <img height="300"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/162866055-e663de21-5d81-496f-b528-0e3cc658389d.png">
+
+Above method here is kind of getting annoying and not super efficient because we have custom logic for this description we've custom logic for this icon name what if we wanted to have 10 icons or more. So with this method we can actually just customize and add whatever we want into this view
+
+If you want to be able to customize this view and put whatever we want inside of it we really need to pass a view into the view
+
+To use @ViewBuilder to make customize aspects in Views
+
+```swift
+// MARK: -  VIEW
+struct ViewBuilderBootCamp: View {
+// MARK: -  PROPERTY
+
+// MARK: -  BODY
+var body: some View {
+VStack {
+HeaderViewRegular(title: "New Title", description: "Hello", iconName: "heart.fill")
+HeaderViewRegular(title: "Another Title", description: nil, iconName: nil)
+
+HeaderViewGeneric(title: "Generic Tilte") {
+  HStack {
+    Text("Hi")
+    Image(systemName: "heart.fill")
+  } //: HSTACK
+}
+
+CustomHStack {
+  Text("Hi 1")
+  Text("Hi 2")
+}
+HStack {
+  Text("Hi 3")
+  Text("Hi 4")
+}
+Spacer()
+} //: VSTACK
+}
+}
+
+// MARK: -  EXTENSTION
+struct HeaderViewRegular: View {
+let title: String
+let description: String?
+let iconName: String?
+
+var body: some View {
+VStack(alignment: .leading, spacing: 10) {
+  Text(title)
+    .font(.largeTitle)
+    .fontWeight(.semibold)
+
+  if let description = description {
+    Text(description)
+      .font(.callout)
+  }
+  if let iconName = iconName {
+    Image(systemName: iconName)
+  }
+
+  RoundedRectangle(cornerRadius: 5)
+    .frame(height: 2)
+
+} //: VSTACK
+.frame(maxWidth: .infinity, alignment: .leading)
+.padding()
+}
+}
+
+struct HeaderViewGeneric<Content:View>: View {
+
+let title: String
+let content: Content
+
+init(title: String, @ViewBuilder content: () -> Content) {
+self.title = title
+self.content = content()
+}
+
+var body: some View {
+VStack(alignment: .leading, spacing: 10) {
+  Text(title)
+    .font(.largeTitle)
+    .fontWeight(.semibold)
+
+  content
+
+  // if let description = description {
+  // 	Text(description)
+  // 		.font(.callout)
+  // }
+  // if let iconName = iconName {
+  // 	Image(systemName: iconName)
+  // }
+  //
+  RoundedRectangle(cornerRadius: 5)
+    .frame(height: 2)
+} //: VSTACK
+.frame(maxWidth: .infinity, alignment: .leading)
+.padding()
+}
+}
+
+struct CustomHStack<Content:View>: View {
+let content: Content
+
+init(@ViewBuilder content: () -> Content) {
+  self.content = content()
+}
+var body: some View {
+  HStack {
+    content
+  }
+}
+}
+
+```
+
+  <img height="300"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/162870856-86673c80-2311-471c-bf7c-575ca22de0b7.png">
+
+We can use @ViewBuilder instead of using it inside the init and we can actually just declare custom variables with the view builder attribute
+
+```swift
+struct LocalViewBuilder: View {
+enum ViewType {
+  case one, two, three
+}
+let type: ViewType
+
+@ViewBuilder  private var headerSection: some View {
+  switch type {
+  case .one:
+    viewOne
+  case .two:
+    viewTwo
+  case .three:
+    viewThree
+  }
+  // if type == .one {
+  // 	viewOne
+  // } else if type == .two {
+  // 	viewTwo
+  // } else if type == .three {
+  // 	viewThree
+  // }
+}
+
+private var viewOne: some View {
+  Text("One!")
+}
+private var viewTwo: some View {
+  VStack {
+    Text("Two")
+    Image(systemName: "heart.fill")
+  }
+}
+private var viewThree: some View {
+  Image(systemName: "heart.fill")
+}
+var body: some View {
+  VStack {
+    headerSection
+  } //: VSTACK
+}
+
+}
+/ MARK: -  PREVIEW
+struct ViewBuilderBootCamp_Previews: PreviewProvider {
+static var previews: some View {
+  // ViewBuilderBootCamp()
+  LocalViewBuilder(type: .one)
+	}
+}
+```
+
+  <img height="300"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/162871041-deb52cf2-b165-4a56-898c-da875802e471.png">
 
 ```swift
 
 ```
 
-  <img height="350"  alt="스크린샷" src="">
+  <img height="300"  alt="스크린샷" src="">
 
-## 07.ViewBuilder
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
 
 ```swift
 
