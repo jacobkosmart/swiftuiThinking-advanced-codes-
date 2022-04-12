@@ -1070,97 +1070,271 @@ static var previews: some View {
 
   <img height="300"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/162871041-deb52cf2-b165-4a56-898c-da875802e471.png">
 
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="350"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="350"  alt="스크린샷" src="">
-
 ## 08.PreferenceKey
 
+Once, you start building custom SwiftUI components you will run into situations where the preference key will come in handy the most common example of a preference key is actually the title in the navigation bar
+
+So, SwiftUI if you use the regular navigation view you probably set the title for that navigation view within the child view of that screen and what you may have realized is that when we are setting the title in a navigation view, we are actually updating the parent title from a child view
+
+In SwiftUI, normally data flows from parent views down to child views and the only way we can get it to flow back is if we use a binding. But you probably noticed that when you're setting the title on a navigation view there is no binding we just set the title as a string and it updates the parent view and that's because behind the scenes it is using a preference key.
+
+```swift
+struct PreferenceKeyBootCamp: View {
+// MARK: -  PROPERTY
+@State  private var text: String = "Hellow world!"
+// MARK: -  BODY
+var body: some View {
+NavigationView {
+  VStack {
+    SecondaryScreen(text: text)
+      .navigationTitle("Navigation Title")
+
+  } //: VSTACK
+} //: NAVIGATION
+.onPreferenceChange(CustomTiltePreferenceKey.self) { value in
+  self.text = value
+}
+}
+}
+
+// MARK: -  PREVIEW
+struct PreferenceKeyBootCamp_Previews: PreviewProvider {
+static var previews: some View {
+  PreferenceKeyBootCamp()
+}
+}
+
+struct SecondaryScreen: View {
+let text: String
+@State private var newValue: String = ""
+
+var body: some View {
+Text(text)
+  .onAppear(perform: getDataFromDatabase)
+  .customTitle(newValue)
+}
+
+func getDataFromDatabase() {
+// download fake data
+DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+  self.newValue = "New Value From DB"
+}
+}
+}
+
+extension View {
+func customTitle(_ text: String) -> some View {
+    preference(key: CustomTiltePreferenceKey.self, value: text)
+}
+}
+
+struct CustomTiltePreferenceKey: PreferenceKey {
+
+static var defaultValue: String = ""
+
+static func reduce(value: inout String, nextValue: () -> String) {
+  value = nextValue()
+}
+}
+```
+
+  <img height="300"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/162882892-533c0333-5078-4075-a4c3-5a72544738ee.gif">
+
+```swift
+import SwiftUI
+
+struct GeometryPreferenceBootCamp: View {
+// MARK: -  PROPERTY
+@State private var rectSize: CGSize = .zero
+// MARK: -  BODY
+var body: some View {
+VStack(spacing: 50) {
+Text("Hello")
+  .frame(width: rectSize.width, height: rectSize.height)
+  .background(Color.blue)
+
+
+HStack {
+  Rectangle()
+
+  GeometryReader { geo in
+    Rectangle()
+      .updateRectangleGeoSize(geo.size)
+  }
+
+  Rectangle()
+}
+.frame(height: 55)
+} //: VSTACK
+.onPreferenceChange(RectangleGeometrySizePreferenceKey.self) { value in
+self.rectSize = value
+}
+}
+}
+
+// MARK: -  PREVIEW
+struct GeometryPreferenceBootCamp_Previews: PreviewProvider {
+static var previews: some View {
+  GeometryPreferenceBootCamp()
+}
+}
+
+extension View {
+func updateRectangleGeoSize(_ size: CGSize) -> some View {
+  preference(key: RectangleGeometrySizePreferenceKey.self, value: size)
+}
+}
+
+struct RectangleGeometrySizePreferenceKey: PreferenceKey {
+static var defaultValue: CGSize = .zero
+
+static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
+  value = nextValue()
+}
+}
+
+```
+
+  <img height="300"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/162884412-89e53d52-f176-4ed5-b2a5-0cc9d77c1ec0.png">
+
+```swift
+import SwiftUI
+
+struct ScrollViewOffsetPreferenceKey: PreferenceKey {
+static var defaultValue: CGFloat = 0
+static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+  value = nextValue()
+}
+}
+
+extension View {
+func onScrollViewoffsetChnaged(action: @escaping (_ offset: CGFloat) -> Void) -> some View {
+self
+.background(
+GeometryReader { geo in
+      Text("")
+        .preference(key: ScrollViewOffsetPreferenceKey.self, value: geo.frame(in: .global).minY)
+    }
+  )
+.onPreferenceChange(ScrollViewOffsetPreferenceKey.self) { value in
+action(value)
+}
+}
+}
+
+struct ScrollViewOffsetPreferenceBootCamp: View {
+
+let title: String = "New title here!!!"
+@State private var scrollViewOffset: CGFloat = 0
+
+var body: some View {
+ScrollView {
+VStack {
+titleLayer
+  .opacity(Double(scrollViewOffset) / 63.0)
+  .onScrollViewoffsetChnaged { value in
+    self.scrollViewOffset = value
+  }
+
+
+contentLayer
+
+} //: VSTACK
+.padding()
+} //: SCROLL
+.overlay(Text("\(scrollViewOffset)"))
+
+.overlay(
+navBarLayer
+.opacity(scrollViewOffset < 40 ? 1.0 : 0.0)
+, alignment: .top
+)
+}
+}
+
+struct ScrollViewOffsetPreferenceBootCamp_Previews: PreviewProvider {
+static var previews: some View {
+ScrollViewOffsetPreferenceBootCamp()
+}
+}
+
+extension ScrollViewOffsetPreferenceBootCamp {
+private var titleLayer: some View {
+Text(title)
+  .font(.largeTitle)
+  .fontWeight(.semibold)
+  .frame(maxWidth: .infinity, alignment: .leading)
+}
+
+private var contentLayer: some View {
+ForEach(0..<100) { _ in
+  RoundedRectangle(cornerRadius: 10)
+    .fill(Color.red.opacity(0.3))
+    .frame(width: 300, height: 300)
+} //: LOOP
+}
+
+private var navBarLayer: some View {
+Text(title)
+  .font(.headline)
+  .frame(maxWidth: .infinity)
+  .frame(height: 55)
+  .background(Color.blue)
+
+}
+}
+
+```
+
+  <img height="300"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/162886805-fb7d50b1-4f10-4ecf-94d4-eb53c4d5604e.gif">
+
 ```swift
 
 ```
 
-  <img height="350"  alt="스크린샷" src="">
+  <img height="300"  alt="스크린샷" src="">
 
 ```swift
 
 ```
 
-  <img height="350"  alt="스크린샷" src="">
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
 
 ## 09.Custom TabView
 

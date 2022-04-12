@@ -19,6 +19,9 @@
 		81C7639927FE7D6100C63C16 /* MatchedGeometryEffectBootCamp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81C7639827FE7D6100C63C16 /* MatchedGeometryEffectBootCamp.swift */; };
 		81C7639B27FE9DC600C63C16 /* CustomShapesBootCamp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81C7639A27FE9DC600C63C16 /* CustomShapesBootCamp.swift */; };
 		81EA50AF280516820079AC74 /* ViewBuilderBootCamp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81EA50AE280516820079AC74 /* ViewBuilderBootCamp.swift */; };
+		81EA50B1280538C10079AC74 /* PreferenceKeyBootCamp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81EA50B0280538C10079AC74 /* PreferenceKeyBootCamp.swift */; };
+		81EA50B428053CC30079AC74 /* GeometryPreferenceBootCamp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81EA50B328053CC30079AC74 /* GeometryPreferenceBootCamp.swift */; };
+		81EA50B628053FA90079AC74 /* ScrollViewOffsetPreferenceBootCamp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81EA50B528053FA90079AC74 /* ScrollViewOffsetPreferenceBootCamp.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +38,9 @@
 		81C7639827FE7D6100C63C16 /* MatchedGeometryEffectBootCamp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchedGeometryEffectBootCamp.swift; sourceTree = "<group>"; };
 		81C7639A27FE9DC600C63C16 /* CustomShapesBootCamp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomShapesBootCamp.swift; sourceTree = "<group>"; };
 		81EA50AE280516820079AC74 /* ViewBuilderBootCamp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewBuilderBootCamp.swift; sourceTree = "<group>"; };
+		81EA50B0280538C10079AC74 /* PreferenceKeyBootCamp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferenceKeyBootCamp.swift; sourceTree = "<group>"; };
+		81EA50B328053CC30079AC74 /* GeometryPreferenceBootCamp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometryPreferenceBootCamp.swift; sourceTree = "<group>"; };
+		81EA50B528053FA90079AC74 /* ScrollViewOffsetPreferenceBootCamp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollViewOffsetPreferenceBootCamp.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,6 +83,7 @@
 				810EF77D2803EFAA002F4803 /* AnimatableDataBootCamp.swift */,
 				810EF77F2804016E002F4803 /* GenericsBootCamp.swift */,
 				81EA50AE280516820079AC74 /* ViewBuilderBootCamp.swift */,
+				81EA50B228053C9F0079AC74 /* PreferenceKeyBootCamp */,
 				816441B127FD1B170020DD97 /* Assets.xcassets */,
 				816441B327FD1B170020DD97 /* Preview Content */,
 			);
@@ -89,6 +96,16 @@
 				816441B427FD1B170020DD97 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		81EA50B228053C9F0079AC74 /* PreferenceKeyBootCamp */ = {
+			isa = PBXGroup;
+			children = (
+				81EA50B0280538C10079AC74 /* PreferenceKeyBootCamp.swift */,
+				81EA50B328053CC30079AC74 /* GeometryPreferenceBootCamp.swift */,
+				81EA50B528053FA90079AC74 /* ScrollViewOffsetPreferenceBootCamp.swift */,
+			);
+			path = PreferenceKeyBootCamp;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -161,11 +178,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				81EA50B1280538C10079AC74 /* PreferenceKeyBootCamp.swift in Sources */,
 				81B1D21B27FD29150082E0F3 /* ViewModifierBootCamp.swift in Sources */,
 				81C7639B27FE9DC600C63C16 /* CustomShapesBootCamp.swift in Sources */,
 				81C7639927FE7D6100C63C16 /* MatchedGeometryEffectBootCamp.swift in Sources */,
 				81B1D21D27FD38D20082E0F3 /* ButtonStyleBootCamp.swift in Sources */,
 				810EF77E2803EFAA002F4803 /* AnimatableDataBootCamp.swift in Sources */,
+				81EA50B628053FA90079AC74 /* ScrollViewOffsetPreferenceBootCamp.swift in Sources */,
+				81EA50B428053CC30079AC74 /* GeometryPreferenceBootCamp.swift in Sources */,
 				810EF7802804016E002F4803 /* GenericsBootCamp.swift in Sources */,
 				81C7639727FE739A00C63C16 /* AnyTransitionBootCamp.swift in Sources */,
 				81EA50AF280516820079AC74 /* ViewBuilderBootCamp.swift in Sources */,
