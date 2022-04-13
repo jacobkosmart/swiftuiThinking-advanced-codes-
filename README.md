@@ -1288,55 +1288,424 @@ Text(title)
 
   <img height="300"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/162886805-fb7d50b1-4f10-4ecf-94d4-eb53c4d5604e.gif">
 
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
 ## 09.Custom TabView
+
+There are majority of apps use either a tab bar or a navigation view and those two components in SwiftUI are not that customizable. Actually, model our custom tab view based off of apple's API for the default tab view
+
+The majority of features in Custom TabView
+
+- Generics
+
+- ViewBuilder
+
+- PreferenceKey
+
+- MatchedGeometryEffect
+
+```swift
+// General style tabView
+import SwiftUI
+
+struct AppTabBarView: View {
+// MARK: -  PROPERTY
+@State private var selection: String = "home"
+// MARK: -  BODY
+var body: some View {
+TabView(selection: $selection) {
+Color.red
+  .tabItem {
+    Image(systemName: "house")
+    Text("Home")
+  }
+
+Color.blue
+  .tabItem {
+    Image(systemName: "heart")
+    Text("Favorite")
+  }
+
+Color.orange
+  .tabItem {
+    Image(systemName: "person")
+    Text("Profile")
+  }
+}
+}
+}
+
+// MARK: -  PREVIEW
+struct AppTabBarView_Previews: PreviewProvider {
+static var previews: some View {
+  AppTabBarView()
+}
+}
+```
+
+  <img height="300"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/162891635-aedb5e07-328c-49ba-a7e5-7bed32046ff2.gif">
+
+```swift
+// in TabBarItem
+import Foundation
+import SwiftUI
+
+// struct TabBarItem: Hashable {
+// 	let iconName: String
+// 	let title: String
+// 	let color: Color
+// }
+
+// Model is handy when you don't know the actual data tat you're going to get
+// TabBar specifically we actually have all that data in our code
+// We have all of the data already it will actually be easier to make this tab bar item and enum instead of struct
+
+enum TabBarItem: Hashable {
+	case home, favorites, profile, messages
+
+	var iconName: String {
+		switch self {
+		case .home: return "house"
+		case .favorites: return "heart"
+		case .profile: return "person"
+		case .messages: return "message"
+		}
+	}
+
+	var title: String {
+		switch self {
+		case .home: return "Home"
+		case .favorites: return "Favorites"
+		case .profile: return "Profile"
+		case .messages: return "Messages"
+		}
+	}
+
+	var color: Color {
+		switch self {
+		case .home: return Color.red
+		case .favorites: return Color.blue
+		case .profile: return Color.green
+		case .messages: return Color.orange
+		}
+	}
+}
+
+
+```
+
+```swift
+// in TabBarItemsPreferenceKey
+import Foundation
+import SwiftUI
+
+// MARK: -  Create PreferenceKey
+struct TabBarItemsPreferenceKey: PreferenceKey {
+
+static var defaultValue: [TabBarItem] = []
+
+static func reduce(value: inout [TabBarItem], nextValue: () -> [TabBarItem]) {
+  value += nextValue()
+}
+}
+
+// MARK: -  ViewModifier
+struct TabBarItemViewModifier: ViewModifier {
+
+let tab: TabBarItem
+@Binding var selection: TabBarItem
+
+func body(content: Content) -> some View {
+  content
+    .opacity(selection == tab ? 1.0 : 0.0)
+    .preference(key: TabBarItemsPreferenceKey.self, value: [tab])
+}
+}
+
+// MARK: -  Extenstion
+extension View {
+func tabBarItem(tab: TabBarItem, selection: Binding<TabBarItem>) -> some View {
+  self
+    .modifier(TabBarItemViewModifier(tab: tab, selection: selection))
+}
+}
+
+```
+
+```swift
+// in CustomTabBarContainerView
+import SwiftUI
+
+struct CustomTabBarContainerView<Content:View>: View {
+
+@Binding var selection: TabBarItem
+let content: Content
+@State private var tabs: [TabBarItem] = []
+
+init(selection: Binding<TabBarItem>, @ViewBuilder content: () -> Content) {
+  self._selection = selection
+  self.content = content()
+}
+
+var body: some View {
+  ZStack(alignment: .bottom) {
+      content
+      .ignoresSafeArea()
+    CustomTabBarView(tabs: tabs, selection: $selection, localSelection: selection)
+    } //: ZSTACK
+  .onPreferenceChange(TabBarItemsPreferenceKey.self) { value in
+    self.tabs = value
+  }
+}
+}
+
+struct CustomTabBarContainerView_Previews: PreviewProvider {
+
+static let tabs: [TabBarItem] = [
+  .home, .favorites, .profile, .messages
+]
+
+static var previews: some View {
+  CustomTabBarContainerView(selection: .constant(tabs.first!)) {
+    Color.red
+  }
+}
+}
+
+```
+
+```swift
+// in CustomTabBarView
+import SwiftUI
+
+// MARK: -  VIEW
+struct CustomTabBarView: View {
+// MARK: -  PROPERTY
+let tabs: [TabBarItem]
+@Binding  var selection: TabBarItem
+@Namespace private var namespace
+@State var localSelection: TabBarItem
+
+// MARK: -  BODY
+var body: some View {
+// tabBarVersion1
+tabBarVersion2
+  .onChange(of: selection) { newValue in
+    withAnimation(.easeInOut) {
+      localSelection = newValue
+    }
+  }
+}
+}
+
+// MARK: -  PREVIEW
+struct CustomTabBarView_Previews: PreviewProvider {
+
+static let tabs: [TabBarItem] = [
+.home, .favorites, .profile
+]
+static var previews: some View {
+VStack {
+  Spacer()
+  CustomTabBarView(tabs: tabs, selection: .constant(tabs.first!), localSelection: tabs.first!)
+}
+}
+}
+
+// MARK: -  EXTENSTION
+extension CustomTabBarView {
+private func tabView(tab: TabBarItem) -> some View {
+VStack {
+Image(systemName: tab.iconName)
+  .font(.subheadline)
+Text(tab.title)
+  .font(.system(size: 10, weight: .semibold, design: .rounded))
+} //: VSTACK
+.foregroundColor(selection == tab ? tab.color : Color.gray)
+.padding(.vertical, 8)
+.frame(maxWidth: .infinity)
+.background(selection == tab ? tab.color.opacity(0.2) : Color.clear)
+.cornerRadius(10)
+}
+
+private var tabBarVersion1: some View {
+HStack {
+ForEach(tabs, id: \.self) { tab in
+  tabView(tab: tab)
+    .onTapGesture {
+      switchToTab(tab: tab)
+    }
+}
+} //: HSTACK
+.padding(6)
+.background(Color.white.ignoresSafeArea(edges: .bottom))
+}
+
+private func switchToTab(tab: TabBarItem) {
+selection = tab
+}
+}
+
+// tabBarVersion2
+extension CustomTabBarView {
+private func tabView2(tab: TabBarItem) -> some View {
+VStack {
+Image(systemName: tab.iconName)
+  .font(.subheadline)
+Text(tab.title)
+  .font(.system(size: 10, weight: .semibold, design: .rounded))
+} //: VSTACK
+.foregroundColor(localSelection == tab ? tab.color : Color.gray)
+.padding(.vertical, 8)
+.frame(maxWidth: .infinity)
+.background(
+ZStack {
+  if localSelection == tab {
+    RoundedRectangle(cornerRadius: 10)
+      .fill(tab.color.opacity(0.2))
+      .matchedGeometryEffect(id: "background_rectangle", in: namespace)
+  }
+} //: ZSTACK
+)
+}
+
+private var tabBarVersion2: some View {
+HStack {
+ForEach(tabs, id: \.self) { tab in
+  tabView2(tab: tab)
+    .onTapGesture {
+      switchToTab(tab: tab)
+    }
+}
+} //: HSTACK
+.padding(6)
+.background(Color.white.ignoresSafeArea(edges: .bottom))
+.cornerRadius(10)
+.shadow(color: Color.black.opacity(0.3), radius: 10, x: 0, y: 5)
+.padding(.horizontal)
+}
+
+}
+```
+
+```swift
+import SwiftUI
+
+struct AppTabBarView: View {
+// MARK: -  PROPERTY
+@State private var selection: String = "home"
+@State private var tabSelection: TabBarItem = .home
+// MARK: -  BODY
+var body: some View {
+CustomTabBarContainerView(selection: $tabSelection) {
+  Color.blue
+    .tabBarItem(tab: .home, selection: $tabSelection)
+
+  Color.red
+    .tabBarItem(tab: .favorites, selection: $tabSelection)
+
+  Color.green
+    .tabBarItem(tab: .profile, selection: $tabSelection)
+
+  Color.orange
+    .tabBarItem(tab: .messages, selection: $tabSelection)
+}
+}
+}
+
+// MARK: -  PREVIEW
+struct AppTabBarView_Previews: PreviewProvider {
+static var previews: some View {
+  AppTabBarView()
+}
+}
+
+// MARK: -  EXTENSTION
+extension AppTabBarView {
+private var defaultTabView: some View {
+TabView(selection: $selection) {
+Color.red
+  .tabItem {
+    Image(systemName: "house")
+    Text("Home")
+  }
+
+Color.blue
+  .tabItem {
+    Image(systemName: "heart")
+    Text("Favorite")
+  }
+
+Color.orange
+  .tabItem {
+    Image(systemName: "person")
+    Text("Profile")
+  }
+} //: TAB
+}
+}
+
+```
+
+  <img height="300"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/163075767-f6d5f204-2f35-4265-9ea4-54cec5590527.gif">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
 
 ```swift
 
