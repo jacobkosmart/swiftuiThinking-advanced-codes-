@@ -2266,105 +2266,206 @@ func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMe
 
   <img height="300"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/163120560-59cbab78-abcd-4d58-8c29-a29a4d84eddb.gif">
 
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-```swift
-
-```
-
-  <img height="350"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="350"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="350"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="350"  alt="스크린샷" src="">
-
 ## 13.Protocols
 
+A Protocol is just a simple set of rules or requirements that a struct or class needs to have. In Swift, Creating protocol actually pretty simple all you have to do is give it a name and then inside the protocol we list out all of the requirements. These requirements are generally just variables and functions that a class or struct would then need to have.
+
+For example in the SwiftUI, Every time we make a new View it is a struct we give it a name and then we make that struct conform to view. This view is actually a protocol and the requirement of the view protocol is that the struct has a body.
+
+When we create our own protocols we can give it custom names and requirements.
+
+Use protocols to really efficiently add dependency injection and then testing into your Apps
+
 ```swift
+// MARK: -  VIEWMODEL
+class DefaultDataSource: ButtonTextProtocol, ButtonPressedProtocol {
+var buttonText: String = "Protocol are Awesome"
+
+func buttonPressed() {
+print("Button was pressed!")
+}
+}
+
+class AlternativeDataSource: ButtonTextProtocol {
+var buttonText: String = "Protocol are Cool"
+func buttonPressed() {
+
+}
+}
+
+
+// MARK: -  VIEW
+struct ProtocolBootCamp: View {
+// MARK: -  PROPERTY
+// let colorTheme: DefaultColorTheme = DefaultColorTheme()
+// let colorTheme: AlternativeColorTheme = AlternativeColorTheme()
+let colorTheme: ColorThemeProtocol
+let dataSource: ButtonTextProtocol
+let dataSource2: ButtonPressedProtocol
+
+// MARK: -  BODY
+var body: some View {
+  ZStack {
+    colorTheme.tertiary.ignoresSafeArea()
+
+    Text(dataSource.buttonText)
+      .font(.headline)
+      .foregroundColor(colorTheme.secondary)
+      .padding()
+      .background(colorTheme.primary)
+      .cornerRadius(10)
+      .onTapGesture {
+        dataSource2.buttonPressed()
+      }
+  }
+}
+}
+
+// MARK: -  PREVIEW
+struct ProtocolBootCamp_Previews: PreviewProvider {
+static var previews: some View {
+  ProtocolBootCamp(colorTheme: DefaultColorTheme(), dataSource2: DefaultDataSource())
+}
+}
+
+// MARK: -  ColorTheme
+struct DefaultColorTheme: ColorThemeProtocol {
+let primary: Color = .blue
+let secondary: Color = .white
+let tertiary: Color = .gray
+}
+
+struct AlternativeColorTheme: ColorThemeProtocol {
+let primary: Color = .red
+let secondary: Color = .white
+let tertiary: Color = .green
+}
+
+struct AnotherColorTheme: ColorThemeProtocol {
+var primary: Color = .blue
+var secondary: Color = .red
+var tertiary: Color = .purple
+}
+
+// MARK: -  PROTOCOL
+protocol ColorThemeProtocol {
+var primary: Color { get }
+var secondary: Color { get }
+var tertiary: Color { get }
+}
+
+protocol ButtonTextProtocol {
+var buttonText: String { get }
+
+}
+
+protocol ButtonPressedProtocol {
+func buttonPressed()
+}
 
 ```
 
-  <img height="350"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="350"  alt="스크린샷" src="">
+  <img height="300"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/163135075-4cc74087-ae31-470f-ab27-9d4dac5ff708.png">
 
 ## 14.Dependency Injection
+
+```swift
+
+```
+
+  <img height="350"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="350"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="350"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="350"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="350"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="350"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="350"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="350"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="350"  alt="스크린샷" src="">
+  
+```swift
+
+````
+
+  <img height="350"  alt="스크린샷" src="">
+
+
+
+```swift
+
+````
+
+  <img height="350"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="350"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="350"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="350"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="350"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="350"  alt="스크린샷" src="">
 
 ```swift
 
