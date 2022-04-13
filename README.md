@@ -1647,91 +1647,355 @@ Color.orange
 
   <img height="300"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/163075767-f6d5f204-2f35-4265-9ea4-54cec5590527.gif">
 
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="350"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="350"  alt="스크린샷" src="">
-
 ## 10.Custom NavigationView
 
+The default NavigationView comes with swiftUI is not that customizable. But you could build a custom Nav View and Bar are actually create wrappers and wrap them around the default navigation view and link
+
+But on the screen it's going to appear like we're using our own custom navigationView. To be possible by using ViewBuilders and PreferenceKeys
+
+```swift
+// Default NavigationView in Apple's API
+struct AppNavBarView: View {
+// MARK: -  PROPERTY
+// MARK: -  BODY
+var body: some View {
+NavigationView {
+ZStack {
+Color.green.ignoresSafeArea()
+
+NavigationLink(destination: Text("Destination")
+                .navigationTitle("Title 2")
+                .navigationBarBackButtonHidden(false)) {
+  Text("Navigate")
+}
+}
+.navigationTitle("Nav title here")
+} //: NAVIGATION
+}
+}
+```
+
+  <img height="300"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/163079814-9674f807-377c-4aab-8fdc-50731deefee0.gif">
+
+```swift
+// in CustomNavBarTitlePreferenceKey
+import Foundation
+import SwiftUI
+
+struct CustomNavBarTitlePreferenceKey: PreferenceKey {
+	static var defaultValue: String = ""
+
+	static func reduce(value: inout String, nextValue: () -> String) {
+		value = nextValue()
+	}
+}
+
+struct CustomNavBarSubtitlePreferenceKey: PreferenceKey {
+	static var defaultValue: String? = nil
+
+	static func reduce(value: inout String?, nextValue: () -> String?) {
+		value = nextValue()
+	}
+}
+struct CustomNavBarBackButtonHiddenPreferenceKey: PreferenceKey {
+	static var defaultValue: Bool = false
+
+	static func reduce(value: inout Bool, nextValue: () -> Bool) {
+		value = nextValue()
+	}
+}
+
+extension View {
+	func customNavigationTile(_ title: String) -> some View {
+		self
+			.preference(key: CustomNavBarTitilePreferenceKey.self, value: title)
+	}
+
+	func customNavigationSubtitle(_ subtitle: String?) -> some View {
+		self
+			.preference(key: CustomNavBarSubtitlePreferenceKey.self, value: subtitle)
+	}
+
+	func customNavigationBarBackButtonHidden(_ hidden: Bool) -> some View {
+		self
+			.preference(key: CustomNavBarBackButtonHiddenPreferenceKey.self, value: hidden)
+	}
+
+	// combine above three functions
+	func customNavBarItems(title: String = "", subtitle: String? = nil, backButtonHidden: Bool = false) -> some View {
+		self
+			.customNavigationTile(title)
+			.customNavigationSubtitle(subtitle)
+			.customNavigationBarBackButtonHidden(backButtonHidden)
+	}
+}
+
+```
+
+```swift
+// in CustomNavLink
+struct CustomNavLink<Label:View, Destination:View>: View {
+let destination: Destination
+let label: Label
+
+init(destination: Destination, @ViewBuilder label: () -> Label) {
+self.destination = destination
+self.label = label()
+}
+
+var body: some View {
+
+NavigationLink(
+  destination:
+    CustomNavBarContainerView(content: {
+      destination
+    }).navigationBarHidden(true)){
+  label
+}
+}
+}
+
+struct CustomNavLink_Previews: PreviewProvider {
+static var previews: some View {
+CustomNavView {
+  CustomNavLink(
+    destination: Text("Destination")) {
+      Text("Click Me")
+    }
+}
+}
+}
+
+```
+
+```swift
+// in CustomNavBarContainerView
+// MARK: -  VIEW
+struct CustomNavBarContainerView<Content: View>: View {
+// MARK: -  PROPERTY
+let content: Content
+@State private var showBackButton: Bool = true
+@State private var title: String = ""
+@State private var subtitle: String? = nil
+
+init(@ViewBuilder content: () -> Content) {
+  self.content = content()
+}
+// MARK: -  BODY
+var body: some View {
+  VStack (spacing: 0) {
+    CustomNavBarView(showBackButton: showBackButton, title: title, subtitle: subtitle)
+    content
+      .frame(maxWidth: .infinity, maxHeight: .infinity)
+  }
+  .onPreferenceChange(CustomNavBarTitilePreferenceKey.self) { value in
+    self.title = value
+  }
+  .onPreferenceChange(CustomNavBarSubtitlePreferenceKey.self) { value in
+    self.subtitle = value
+  }
+  .onPreferenceChange(CustomNavBarBackButtonHiddenPreferenceKey.self) { value in
+    self.showBackButton = !value
+  }
+}
+}
+
+// MARK: -  PREVIEW
+struct CustomNavBarContainerView_Previews: PreviewProvider {
+static var previews: some View {
+CustomNavBarContainerView {
+ZStack {
+  Color.green.ignoresSafeArea()
+
+  Text("Hello")
+    .foregroundColor(.white)
+    .customNavigationTile("New Title")
+    .customNavigationSubtitle("subtitle")
+    .customNavigationBarBackButtonHidden(true)
+}
+}
+}
+}
+
+```
+
+```swift
+// in CustomNavBarView
+// MARK: -  VIEW
+struct CustomNavBarView: View {
+// MARK: -  PROPERTY
+@Environment(\.presentationMode) var presentationMode
+let  showBackButton: Bool
+let title: String
+let subtitle: String?
+// MARK: -  BODY
+var body: some View {
+HStack {
+  if showBackButton {
+    backButton
+  }
+  Spacer()
+  titleSection
+  Spacer()
+  if showBackButton {
+    backButton
+      .opacity(0)
+  }
+
+} //: HSTACK
+.padding()
+.accentColor(.white)
+.foregroundColor(.white)
+.font(.headline)
+.background(Color.blue.ignoresSafeArea(edges: .top))
+}
+}
+
+// MARK: -  PREVIEW
+struct CustomNavBarView_Previews: PreviewProvider {
+static var previews: some View {
+VStack {
+  CustomNavBarView(showBackButton: true, title: "Title here", subtitle: "Subtitle goes here")
+  Spacer()
+}
+}
+}
+
+extension CustomNavBarView {
+private var backButton: some View {
+Button {
+  presentationMode.wrappedValue.dismiss()
+} label: {
+  Image(systemName: "chevron.left")
+}
+}
+
+private var titleSection: some View {
+VStack (spacing: 4) {
+  Text(title)
+    .font(.title)
+    .fontWeight(.semibold)
+  if let subtitle = subtitle {
+    Text(subtitle)
+  }
+
+} //: VSTACK
+}
+}
+
+```
+
+```swift
+// in CustomNavView
+struct CustomNavView<Content:View>: View {
+// MARK: -  PROPERTY
+let content: Content
+
+init(@ViewBuilder content: () -> Content) {
+self.content = content()
+}
+// MARK: -  BODY
+var body: some View {
+NavigationView {
+  CustomNavBarContainerView {
+    content
+  }
+  .navigationBarHidden(true)
+} //: NAVIGATION
+.navigationViewStyle(.stack)
+}
+}
+
+// MARK: -  PREVIEW
+struct CustomNavView_Previews: PreviewProvider {
+static var previews: some View {
+CustomNavView {
+  Color.red.ignoresSafeArea()
+}
+}
+}
+
+// enable drag back gesture in CustomNavBar
+extension UINavigationController {
+open override func viewDidLoad() {
+  super.viewDidLoad()
+  interactivePopGestureRecognizer?.delegate = nil
+}
+}
+
+```
+
+```swift
+struct AppNavBarView: View {
+// MARK: -  BODY
+var body: some View {
+CustomNavView {
+ZStack {
+Color.orange.ignoresSafeArea()
+
+CustomNavLink(destination:
+              Text("Destination")
+              .customNavigationTile("Second Screen")
+              .customNavigationSubtitle("Sibtitle should be showing!!")
+) {
+Text("Navigate")
+}
+} //: ZSTACK
+.customNavBarItems(title: "New Title!", subtitle: nil, backButtonHidden: true)
+}
+}
+}
+
+// MARK: -  PREVIEW
+struct AppNavBarView_Previews: PreviewProvider {
+static var previews: some View {
+AppNavBarView()
+}
+}
+
+// MARK: -  EXTENSTION
+extension AppNavBarView {
+private var defaultNavView: some View {
+NavigationView {
+ZStack {
+Color.green.ignoresSafeArea()
+
+NavigationLink(destination: Text("Destination")
+              .navigationTitle("Title 2")
+              .navigationBarBackButtonHidden(false)) {
+Text("Navigate")
+}
+}
+.navigationTitle("Nav title here")
+} //: NAVIGATION
+}
+}
+
+```
+
+  <img height="300"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/163092451-f8434a2e-a70b-46f4-abf9-e8d98277bd2f.gif">
+
 ```swift
 
 ```
 
-  <img height="350"  alt="스크린샷" src="">
+  <img height="300"  alt="스크린샷" src="">
 
 ```swift
 
 ```
 
-  <img height="350"  alt="스크린샷" src="">
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
 
 ## 11.UIViewRepresentable
 
