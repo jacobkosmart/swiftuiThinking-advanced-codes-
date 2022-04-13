@@ -27,6 +27,7 @@
 		81DCA01B280668B600C361EC /* CustomNavView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DCA01A280668B600C361EC /* CustomNavView.swift */; };
 		81DCA01D28066A6E00C361EC /* CustomNavLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DCA01C28066A6E00C361EC /* CustomNavLink.swift */; };
 		81DCA01F28066E0100C361EC /* CustomNavBarPreferenceKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DCA01E28066E0100C361EC /* CustomNavBarPreferenceKeys.swift */; };
+		81DCA02128069C8A00C361EC /* UIViewRepresentableBootCamp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DCA02028069C8A00C361EC /* UIViewRepresentableBootCamp.swift */; };
 		81EA50AF280516820079AC74 /* ViewBuilderBootCamp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81EA50AE280516820079AC74 /* ViewBuilderBootCamp.swift */; };
 		81EA50B1280538C10079AC74 /* PreferenceKeyBootCamp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81EA50B0280538C10079AC74 /* PreferenceKeyBootCamp.swift */; };
 		81EA50B428053CC30079AC74 /* GeometryPreferenceBootCamp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81EA50B328053CC30079AC74 /* GeometryPreferenceBootCamp.swift */; };
@@ -57,6 +58,7 @@
 		81DCA01A280668B600C361EC /* CustomNavView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNavView.swift; sourceTree = "<group>"; };
 		81DCA01C28066A6E00C361EC /* CustomNavLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNavLink.swift; sourceTree = "<group>"; };
 		81DCA01E28066E0100C361EC /* CustomNavBarPreferenceKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNavBarPreferenceKeys.swift; sourceTree = "<group>"; };
+		81DCA02028069C8A00C361EC /* UIViewRepresentableBootCamp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewRepresentableBootCamp.swift; sourceTree = "<group>"; };
 		81EA50AE280516820079AC74 /* ViewBuilderBootCamp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewBuilderBootCamp.swift; sourceTree = "<group>"; };
 		81EA50B0280538C10079AC74 /* PreferenceKeyBootCamp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferenceKeyBootCamp.swift; sourceTree = "<group>"; };
 		81EA50B328053CC30079AC74 /* GeometryPreferenceBootCamp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometryPreferenceBootCamp.swift; sourceTree = "<group>"; };
@@ -108,6 +110,7 @@
 				81EA50B228053C9F0079AC74 /* PreferenceKeyBootCamp */,
 				81EA50B728054C700079AC74 /* CustomTabBar */,
 				81DCA013280659B300C361EC /* CustomNavBar */,
+				81DCA02028069C8A00C361EC /* UIViewRepresentableBootCamp.swift */,
 				816441B127FD1B170020DD97 /* Assets.xcassets */,
 				816441B327FD1B170020DD97 /* Preview Content */,
 			);
@@ -251,6 +254,7 @@
 				810EF77C2803D4AA002F4803 /* CustomCurvesBootCamp.swift in Sources */,
 				816441AE27FD1B150020DD97 /* SwiftThinkingAdvanceApp.swift in Sources */,
 				8150F0DA280557F50096B193 /* CustomTabBarContainerView.swift in Sources */,
+				81DCA02128069C8A00C361EC /* UIViewRepresentableBootCamp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

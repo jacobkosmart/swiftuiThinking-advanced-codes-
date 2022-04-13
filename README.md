@@ -1975,43 +1975,238 @@ Text("Navigate")
 
   <img height="300"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/163092451-f8434a2e-a70b-46f4-abf9-e8d98277bd2f.gif">
 
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="300"  alt="스크린샷" src="">
-
-```swift
-
-```
-
 ## 11.UIViewRepresentable
 
+UIViewRepresentable is the simple wrapper that we can use to take UIKit components and put them into SwiftUI. There are still a lot of components un UIKit that are not available or not as customizable in SwiftUI
+
+Occasionally, you might want to take a UIKit component and then put it in your SwiftUI APP. If you do run into a situation we want to convert an object like how to get a UIKit object onto the screen and how to interact between the UIKit and SwiftUI objects
+
 ```swift
+// Convert a UIView from UIKit to SwiftUI
+struct UIViewRepresentableBootCamp: View {
+// MARK: -  PROPERTY
+// MARK: -  BODY
+var body: some View {
+  VStack {
+    Text("Hello")
+    BasicUIViewRepresentable()
+  } //: VSTACK
+}
+}
+
+// MARK: -  PREVIEW
+struct UIViewRepresentableBootCamp_Previews: PreviewProvider {
+static var previews: some View {
+  UIViewRepresentableBootCamp()
+}
+}
+
+struct BasicUIViewRepresentable: UIViewRepresentable {
+
+func makeUIView(context: Context) -> some UIView {
+  let view = UIView()
+  view.backgroundColor = .red
+  return view
+}
+
+func updateUIView(_ uiView: UIViewType, context: Context) {
+
+}
+}
+```
+
+  <img height="300"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/163110062-0c9d1a10-9a2b-4f10-862a-8a4f1c0bf23a.png">
+
+```swift
+import SwiftUI
+
+// Convert a UIView from UIKit to SwiftUI
+struct UIViewRepresentableBootCamp: View {
+// MARK: -  PROPERTY
+@State private var text: String = ""
+// MARK: -  BODY
+var body: some View {
+VStack {
+Text(text)
+
+HStack {
+  Text("SwiftUI:")
+  TextField("Type here..", text: $text)
+    .frame(height: 55)
+    .background(Color.gray.opacity(0.2))
+}
+
+HStack {
+  Text("UIKit")
+  UITextFieldViewRepresentable(text: $text)
+    .updatePlaceholder("New Placeholder")
+    .frame(height: 55)
+    .background(Color.gray.opacity(0.2))
+}
+
+} //: VSTACK
+}
+}
+
+// MARK: -  PREVIEW
+struct UIViewRepresentableBootCamp_Previews: PreviewProvider {
+static var previews: some View {
+  UIViewRepresentableBootCamp()
+}
+}
+
+struct UITextFieldViewRepresentable: UIViewRepresentable {
+
+@Binding var text: String
+var placeholder: String
+let placeholderColor: UIColor
+
+init(text: Binding<String>, placeholder: String = "Default placeholder...", placeholderColor: UIColor = .red) {
+  self._text = text
+  self.placeholder = placeholder
+  self.placeholderColor = placeholderColor
+}
+
+func makeUIView(context: Context) -> UITextField {
+  let textfield = getTextField()
+  textfield.delegate = context.coordinator
+  return textfield
+}
+
+// send data from SwiftUI to UIKit
+func updateUIView(_ uiView: UITextField, context: Context) {
+  uiView.text = text
+}
+
+private func getTextField() -> UITextField {
+  let textfield = UITextField(frame: .zero)
+  let placeholder = NSAttributedString(
+    string: placeholder,
+    attributes: [
+      .foregroundColor : placeholderColor
+    ])
+  textfield.attributedPlaceholder = placeholder
+  // textfield.delegate
+  return textfield
+}
+
+func updatePlaceholder(_ text: String) -> UITextFieldViewRepresentable {
+  var viewRepresentable = self
+  viewRepresentable.placeholder = text
+  return viewRepresentable
+}
+
+// Send data from UIKit to SwiftUI
+func makeCoordinator() ->Coordinator {
+  return Coordinator(text: $text)
+}
+
+class Coordinator: NSObject, UITextFieldDelegate {
+
+  @Binding var text: String
+
+  init(text: Binding<String>) {
+    self._text = text
+  }
+  func textFieldDidChangeSelection(_ textField: UITextField) {
+    text = textField.text ?? ""
+  }
+}
+}
 
 ```
 
-  <img height="350"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="350"  alt="스크린샷" src="">
+  <img height="300"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/163114998-e1cb8466-7368-4a47-9d58-4e750b8d421b.gif">
 
 ## 12.UIViewControllerRepresentable
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="300"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+```swift
+
+```
+
+  <img height="350"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="350"  alt="스크린샷" src="">
 
 ```swift
 

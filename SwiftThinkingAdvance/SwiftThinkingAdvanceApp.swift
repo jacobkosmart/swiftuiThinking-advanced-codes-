@@ -11,7 +11,7 @@ import SwiftUI
 struct SwiftThinkingAdvanceApp: App {
     var body: some Scene {
         WindowGroup {
-					AppTabBarView()
+					UIViewRepresentableBootCamp()
         }
     }
 }
