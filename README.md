@@ -2369,17 +2369,215 @@ func buttonPressed()
 
 ## 14.Dependency Injection
 
+Nowadays, Dependency injection is a really hot term. This is actually injecting your dependencies but what that really means is when we create a struct or class that has dependencies instead of referencing the dependencies from within the class or within the struct themselves.
+
+We're going to actually inject the dependencies into the struct through the initializer. So if you've been using custom and inits in your struct in you classes you've already been doing a little bit of dependency injection
+
+We can programmatically change what is injected into the class so we can change our inputs we can customize the init so that the structure of the class maybe performs or acts differently. It is important thing is your app architecture cause when you've using dependency injection at some point in your code you're going to create your dependencies and then you're going to inject and pass those dependencies throughout all your views your classes your ViewModels
+
+To figure out when we should actually create those dependencies and what is the flow where we should actually pass those dependencies to all of those structs and classes
+
+- Before dependency Injection, Fetch fakeData from JSONplaceholder by using Combine
+
+> JSONplaceholder : https://jsonplaceholder.typicode.com/posts
+
 ```swift
+import SwiftUI
+import Combine
+
+// MARK: -  MODEL
+struct PostModel: Identifiable, Codable {
+let userId: Int
+let id: Int
+let title: String
+let body: String
+}
+
+// MARK: -  DATA SERVICE
+class ProductionDataService {
+static let instance = ProductionDataService() // Singleton
+
+let url: URL = URL(string: "https://jsonplaceholder.typicode.com/posts")!
+
+func getData() -> AnyPublisher<[PostModel], Error> {
+  URLSession.shared.dataTaskPublisher(for: url)
+    .map({ $0.data })
+    .decode(type: [PostModel].self, decoder: JSONDecoder())
+    .receive(on: DispatchQueue.main)
+    .eraseToAnyPublisher()
+}
+}
+
+// MARK: -  VIEWMODEL
+class DependencyInjectionViewModel: ObservableObject {
+// MARK: -  PROPERTY
+@Published var dataArray: [PostModel] = []
+var cancellables = Set<AnyCancellable>()
+// MARK: -  INIT
+init() {
+loadPosts()
+}
+// MARK: -  FUNCTION
+private func loadPosts() {
+ProductionDataService.instance.getData()
+  .sink { _ in
+
+  } receiveValue: { [weak self] returnedPosts in
+    self?.dataArray = returnedPosts
+  }
+  .store(in: &cancellables)
+
+}
+}
+
+// MARK: -  VIEW
+struct DependencyInjectionBootCamp: View {
+// MARK: -  PROPERTY
+@StateObject private var vm = DependencyInjectionViewModel()
+// MARK: -  BODY
+var body: some View {
+ScrollView {
+  VStack {
+    ForEach(vm.dataArray) { post in
+      Text(post.title)
+    }
+  } //: VSTACK
+} //: SCROLL
+}
+}
+```
+
+  <img height="350"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/163324728-f0397ca8-f9fd-42a5-ba39-d1a41de463e6.gif">
+
+Dependency Injection is basically the solution or an alternative to using the singleton design pattern. Singleton Pattern great for when you are learning out of code but there are a lot of flaws and problems with using singletons
+
+- The Problem of using Singletons
+
+  - Singleton's are GLOBAL : We can access this instance from anywhere in our code. When you start making larger apps It's going to get confusing if you have a bunch of global variables. Additionally, if you have singleton instance and it's being accessed from a bunch of different places in your app at the same time you could run into some really big problems if maybe you're using a multi-threaded environment so you're doing different tasks on different threads and those different threads are trying to access the same instance at the same time you could end up getting a bunch of crashes in your app
+
+  - Can't customize the init! : When we initialize our production data service as a singleton we're not initializing it with any data. It is important when you start trying to add testing to your app
+
+  - Can't swap out dependencies : We can use protocols to swap things in an out of app. But if your app is always referencing the production data service instance always going to end up referencing this exact class and therefore we have to use this exact data service we can't use another data service
+
+So, avoid to these problems in Singleton is to use **dependency injection**.
+
+If the data service we want to initialize it pretty much early on in our app almost at the beginning of our app and then inject it into the res of our app all the Views and ViewModels that need a reference to the data service
+
+```swift
+import SwiftUI
+import Combine
+
+// MARK: -  MODEL
+struct PostModel: Identifiable, Codable {
+	let userId: Int
+let id: Int
+let title: String
+let body: String
+}
+
+// MARK: -  PROTOCOL
+// To use Protocol swap in and out whatever we want to use as the data service
+// if we were testing or maybe just developing quickly we could then use our mock data service
+protocol DataServiceProtocol {
+func getData() -> AnyPublisher<[PostModel], Error>
+}
+
+// MARK: -  DATA SERVICE
+class ProductionDataService {
+let url: URL
+
+init(url: URL) {
+self.url = url
+}
+
+func getData() -> AnyPublisher<[PostModel], Error> {
+URLSession.shared.dataTaskPublisher(for: url)
+  .map({ $0.data })
+  .decode(type: [PostModel].self, decoder: JSONDecoder())
+  .receive(on: DispatchQueue.main)
+  .eraseToAnyPublisher()
+}
+}
+
+class MockDataService: DataServiceProtocol {
+
+let testData: [PostModel]
+
+init(data: [PostModel]?) {
+self.testData = data ?? [
+  PostModel(userId: 1, id: 1, title: "One", body: "one one"),
+  PostModel(userId: 2, id: 2, title: "Two", body: "two two")
+]
+}
+
+func getData() -> AnyPublisher<[PostModel], Error> {
+Just(testData)
+  .tryMap({ $0 })
+  .eraseToAnyPublisher()
+}
+}
+
+
+
+// MARK: -  VIEWMODEL
+class DependencyInjectionViewModel: ObservableObject {
+// MARK: -  PROPERTY
+@Published var dataArray: [PostModel] = []
+var cancellables = Set<AnyCancellable>()
+let dataService: DataServiceProtocol
+// MARK: -  INIT
+// Not Global access in ProductionDataService
+init(dataService: DataServiceProtocol) {
+  self.dataService = dataService
+  loadPosts()
+}
+// MARK: -  FUNCTION
+private func loadPosts() {
+  dataService.getData()
+    .sink { _ in
+
+    } receiveValue: { [weak self] returnedPosts in
+      self?.dataArray = returnedPosts
+    }
+    .store(in: &cancellables)
+
+}
+}
+
+// MARK: -  VIEW
+struct DependencyInjectionBootCamp: View {
+// MARK: -  PROPERTY
+@StateObject private var vm: DependencyInjectionViewModel
+
+init(dataService: DataServiceProtocol) {
+_vm = StateObject(wrappedValue: DependencyInjectionViewModel(dataService: dataService))
+}
+// MARK: -  BODY
+var body: some View {
+ScrollView {
+  VStack {
+    ForEach(vm.dataArray) { post in
+      Text(post.title)
+    }
+  } //: VSTACK
+} //: SCROLL
+}
+}
+
+// MARK: -  PREVIEW
+struct DependencyInjectionBootCamp_Previews: PreviewProvider {
+
+// Can customize init
+// static let dataService = ProductionDataService(url: URL(string: "https://jsonplaceholder.typicode.com/posts")!)
+static let dataService = MockDataService(data: nil)
+static var previews: some View {
+DependencyInjectionBootCamp(dataService: dataService)
+}
+}
 
 ```
 
-  <img height="350"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="350"  alt="스크린샷" src="">
+  <img height="350"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/163332542-81f1121e-1256-49dd-8969-cff827078fa9.png">
 
 ```swift
 
@@ -2431,59 +2629,11 @@ func buttonPressed()
 
 
 
-```swift
-
-````
-
-  <img height="350"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="350"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="350"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="350"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="350"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="350"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="350"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="350"  alt="스크린샷" src="">
-
 ## 15.Unit Testing
 
 ```swift
 
-```
+````
 
   <img height="350"  alt="스크린샷" src="">
 

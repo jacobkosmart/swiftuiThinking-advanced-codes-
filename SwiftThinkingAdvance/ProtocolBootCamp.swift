@@ -51,12 +51,12 @@ struct ProtocolBootCamp: View {
 	}
 }
 
-// MARK: -  PREVIEW
-struct ProtocolBootCamp_Previews: PreviewProvider {
-	static var previews: some View {
-		ProtocolBootCamp(colorTheme: DefaultColorTheme(), dataSource2: DefaultDataSource())
-	}
-}
+// // MARK: -  PREVIEW
+// struct ProtocolBootCamp_Previews: PreviewProvider {
+// 	static var previews: some View {
+// 		ProtocolBootCamp(colorTheme: DefaultColorTheme(), dataSource2: DefaultDataSource())
+// 	}
+// }
 
 // MARK: -  ColorTheme
 struct DefaultColorTheme: ColorThemeProtocol {
