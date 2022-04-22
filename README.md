@@ -2579,8 +2579,114 @@ DependencyInjectionBootCamp(dataService: dataService)
 
   <img height="350"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/163332542-81f1121e-1256-49dd-8969-cff827078fa9.png">
 
-```swift
+## 16.Combine
 
+### 17.Futures and Promises
+
+Future publishers basically a wrapper that where we can take functions that have regular escape closure and convert them into publisher so that we can use them in combine
+
+- download with @escaping closure - the legacy wat of how worked with asynchronous code before Combine
+- download with Combine - Use subscribers and publishers
+
+How can we convert that code so that we can use it with Combine so that we can convert the @escaping closure into a publisher that we can then subscribe to in Combine
+
+The purpose is that if we're using Combine across our entire app and then we run into maybe a couple of functions that are not publishers and we want to convert those to publishers so that we can then use them in our pipelines and intermingle them with all of our other publishers and subscribers we need some way to convert the closure data to a publisher
+
+```swift
+import SwiftUI
+import Combine
+
+
+// MARK: -  VIEWMODEL
+class FuturesBootCampViewModel: ObservableObject {
+// MARK: -  PROPERTY
+@Published var title: String = "Starting title"
+let url = URL(string: "https://www.google.com")!
+var cancellables = Set<AnyCancellable>()
+// MARK: -  INIT
+init() {
+download()
+}
+// MARK: -  FUNCTION
+func download() {
+// getCombinePublisher()
+// 	.sink { _ in
+//
+// 	} receiveValue: { [weak self] returnedValue in
+// 		self?.title = returnedValue
+// 	}
+// 	.store(in: &cancellables)
+
+// getEscapingClosure { [weak self] returnedValue , error in
+// 	self?.title = returnedValue
+// }
+
+getFuturePublisher()
+  .sink { _ in
+
+  } receiveValue: { [weak self] returnedValue in
+    self?.title = returnedValue
+  }
+  .store(in: &cancellables)
+
+}
+
+func getCombinePublisher() -> AnyPublisher<String, URLError> {
+URLSession.shared.dataTaskPublisher(for: url)
+  .timeout(1, scheduler: DispatchQueue.main)
+  .map({ _ in
+    return "New Value"
+  })
+  .eraseToAnyPublisher()
+}
+
+func getEscapingClosure(completionHandler: @escaping (_ value: String, _ error: Error?) -> Void) {
+URLSession.shared.dataTask(with: url) { data, response, error in
+  completionHandler("New value 2", nil)
+}
+.resume()
+}
+
+// Future : It's prodicing a single value where our regular publishers can possibly keep publishing over their lifetime and be subscurbed to them forever
+// Promise: The function promising that it will return a value in the future
+func getFuturePublisher() -> Future<String, Error> {
+  Future { promise in
+  self.getEscapingClosure { returnedValue, error in
+    if let error = error {
+      promise(.failure(error))
+    } else {
+      promise(.success(returnedValue))
+    }
+  }
+}
+}
+
+// asyncroous code with @escaping
+func doSomething(completionHandler: @escaping (_ value: String) -> ()) {
+  DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+    completionHandler("NEW STRING")
+  }
+}
+// @escaping logic convert to Combine by using Future
+func doSomethingInTheFuture() -> Future<String, Never> {
+  Future { promise in
+    self.doSomething { value in
+      promise(.success(value))
+    }
+  }
+}
+}
+
+// MARK: -  VIEW
+struct FutherBootCamp: View {
+// MARK: -  PROPERTY
+@StateObject private var vm = FuturesBootCampViewModel()
+
+// MARK: -  BODY
+var body: some View {
+  Text(vm.title)
+}
+}
 ```
 
   <img height="350"  alt="스크린샷" src="">
@@ -2629,7 +2735,6 @@ DependencyInjectionBootCamp(dataService: dataService)
 
 
 
-## 15.Unit Testing
 
 ```swift
 
@@ -2643,7 +2748,17 @@ DependencyInjectionBootCamp(dataService: dataService)
 
   <img height="350"  alt="스크린샷" src="">
 
-## 16.UI Testing
+```swift
+
+```
+
+  <img height="350"  alt="스크린샷" src="">
+
+```swift
+
+```
+
+  <img height="350"  alt="스크린샷" src="">
 
 ```swift
 
@@ -2657,21 +2772,9 @@ DependencyInjectionBootCamp(dataService: dataService)
 
   <img height="350"  alt="스크린샷" src="">
 
-## 17.Combine
+## 18.Unit Testing
 
-```swift
-
-```
-
-  <img height="350"  alt="스크린샷" src="">
-
-```swift
-
-```
-
-  <img height="350"  alt="스크린샷" src="">
-
-### 18.Futures and Promises
+Unit Testing is testing all of basically your code your logic in your app.
 
 ```swift
 
